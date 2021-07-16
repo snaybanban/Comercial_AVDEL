@@ -98,7 +98,7 @@
                     }, settings.animSpeed);
                 } else {
                     nivoCaption.html(title);
-                    nivoCaption.stop().fadeIn(settings.animSpeed);
+                    //nivoCaption.stop().fadeIn(settings.animSpeed);
                 }
             } else {
                 nivoCaption.stop().fadeOut(settings.animSpeed);
