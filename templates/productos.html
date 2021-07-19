@@ -1,138 +1,85 @@
-{% extends 'layout.html' %}
-{% block title %} 
-    productos
-{% endblock %}
-{%block tt%}
-{% if not item_cats %}
-<h1>No Items! Please add some items through admin interface <a href="/admin" class="badge badge-secondary">Admin Panel</a></h1>
-{%endif%}
-{%endblock%}
-{% block content %}
-<div class="container" style="background-color: rgb(206, 182, 182);">
-<center><h2 style="font-family: Arial, Helvetica, sans-serif">Area de compra</h2></center>
-<br>
-{%for item_cat in item_cats %}
-<h3 id="{{item_cat.name}}" style="text-align: center;"><strong>{{item_cat.name}}</strong></h3>
-<div class="row row-cols-1 row-cols-md-3">
-    {% for item in items %}
-        {% if item.category == item_cat %}
-        <div class="col mb-4">
-            <div class="card h-100"">
-                <div class="card-body">
-                    <h5 class="card-title">
-                      {%load static%}
-                      <img src="../static/img/imgstatic.png" style="width:120px; height: 120px;">
-                        <strong>
-                            {{item.name}} 
-                            {%if item.item_type != none %}
-                                <p>Calidad</p>
-                                
-                                [ <span class="text-muted">{{item.item_type}}</span> ]
-                            {%endif%}
-                        </strong>
-                        <button style="float: right;" class="btn btn-outline-primary" data-toggle="modal" data-target="#item-{{item.id}}-modal">Añadir pedido</button>
-                    </h5>
-                    <p class="card-text">1 Logo: {{item.price_small}}<br>2 Logo: {{item.price_large}} </strong></p>
-                </div>
-            </div>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/style.css">
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="shortcut icon" href="../static/img/lcon.jpg" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="../static/css/nivo-slider.css">
+    <title>nosotros</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+    <!-- Brand/logo -->
+    <a class="navbar-brand" href="../index.html">
+      <img src="../static/img/logo.jpg" href="#" class="rounded-circle" alt="logo" style="width:40px;"> Inicio
+    </a>
 
-        {%endif%}
-    {%endfor%}
-  </div><hr>
-    {% for item in items %}
-        {% if item.category == item_cat %}
-        <!-- Create modal for this item -->
-        <div class="modal fade" id="item-{{item.id}}-modal" tabindex="-1" role="dialog" aria-labelledby="item-{{item.id}}-modal-CenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Personalizar <strong>{{item.name}}</strong></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                </div>
-                <div class="modal-body">
-                    <form onsubmit="AlertUser('{{item.id}}')" action="{% url 'add_item' %}" method="POST">
-                        {%csrf_token%}
-                        <input name="item-id" type="hidden" value="{{item.id}}">
-                        {% if item.max_topping %}
-                        <input name="max-topping" type="hidden" value="{{item.max_topping}}">
-                            {% for i in item.max_topping %}
-                                <div class="form-group">
-                                <label for="exampleFormControlSelect1">Seleccionar cobertura {{i}}</label>
-                                <select name="select-{{i}}" class="form-control" id="exampleFormControlSelect1">
-                                    {% for topping in toppings %}
-                                    <option value="{{topping.id}}">{{topping.name}}</option>
-                                    {%endfor%}
-                                </select>
-                                </div>
-                            {%endfor%}
-                        {%endif%}
-                        <div class="form-group">
-                        <label for="exampleFormControlSelect1">Seleccione cantidad de logo</label>
-                        <select name="size-select" class="form-control" id="exampleFormControlSelect1">
-                            {% if item.price_small %}
-                                <option value="1 logo">1 logo</option>
-                            {%endif%}
-                            {% if item.price_large %}
-                                <option value="2 logo">2 logo</option>
-                            {%endif%}
-                        </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleFormControlSelect1">Seleccione color</label>
-                            <select name="size-select" class="form-control" id="exampleFormControlSelect1">
-                                {% if item.price_small %}
-                                    <option value="1 logo">rojo</option>
-                                {%endif%}
-                                {% if item.price_large %}
-                                    <option value="2 logo">negro</option>
-                                {%endif%}
-                                {% if item.price_large %}
-                                    <option value="2 logo">blanco</option>
-                                {%endif%}{% if item.price_large %}
-                                    <option value="2 logo">azul</option>
-                                {%endif%}
-                                {% if item.price_large %}
-                                    <option value="2 logo">rosado</option>
-                                {%endif%}
-                                {% if item.price_large %}
-                                    <option value="2 logo">amarillo</option>
-                                {%endif%}
-                                {% if item.price_large %}
-                                    <option value="2 logo">verde</option>
-                                {%endif%}
-                            </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="exampleFormControlSelect1">Seleccione la talla</label>
-                                <select name="size-select" class="form-control" id="exampleFormControlSelect1">
-                                    {% if item.price_small %}
-                                        <option value="1 logo">S</option>
-                                    {%endif%}
-                                    {% if item.price_large %}
-                                        <option value="2 logo">L</option>
-                                    {%endif%}
-                                    {% if item.price_large %}
-                                        <option value="2 logo">M</option>
-                                    {%endif%}
-                                    {% if item.price_large %}
-                                        <option value="2 logo">Xl</option>
-                                    {%endif%}
-                                    {% if item.price_large %}
-                                        <option value="2 logo">XXL</option>
-                                    {%endif%}
-                                </select>
-                                </div>
-                        <button style="float: right;" type="submit" class="btn btn-primary">Añadir al carrito</button>
-                    </form>
-                </div>
+    <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <!-- Links -->
+    <div class="collapse navbar-collapse" id="navbar">
+    <ul class="navbar-nav ml-auto mt-2">
+      <li class="nav-item"><a class="nav-link" href="../templates/productos.html">Productos</a></li>
+      <li class="nav-item"><a class="nav-link" href="../templates/contacto.html">Contacto</a></li>
+      <li class="nav-item"><a class="nav-link" href="../templates/acerca.html">Acerca de</a></li>
+    </ul>
+    </div>
+</nav>   
+
+<footer class="footer" id="Footer">
+  <link rel="stylesheet" href="../static/css/footer.css">
+  <div class="container-footer" data-aos="fade-down">
+      <div class="row" data-aos="fade-down">
+          <div class="footer-colum" data-aos="fade-down">
+              <h4>Compañia</h4>
+              <ul>
+                   <li><a href="#foo0" id="foo0" data-toggle="popover" title="Nosotros" data-trigger="focus" data-content="Una empresa con un gran prestigio, llena de valores y bondad humana.">Sobre nosotros</a></li>
+                   <li><a href="#foo1" id="foo1" data-toggle="popover" title="Servicios" data-trigger="focus" data-content="El mejor servicio en el pais">Nuestros servicios</a></li>
+                   <li><a href="#foo2" id="foo2" data-toggle="popover" title="Privacidad" data-trigger="focus" data-content="Confiabilidad y privacidad a nuestros clientes. 🔐">Politica de privacidad</a></li>   
+                </ul>
             </div>
+            <div class="footer-colum" data-aos="fade-down">
+                <h4>Ayuda</h4>
+                <ul>
+                   <li><a href="#foo4" id="foo4" data-toggle="popover" title="Desarrollador 💻" data-trigger="focus" data-content="Angelo Sanchez 📲  75471653">Soporte tecnico ⚙️</a></li>
+                   <li><a href="#foo5" id="foo5" data-toggle="popover" title="Pagos 💵" data-trigger="focus" data-content="Transferencia / pago inmediato">Metodos de pago</a></li>   
+                </ul>
             </div>
-        </div>
-        {%endif%}
-    {%endfor%}
-{%endfor%}
-</div>
-{%endblock%}
+            <div class="footer-colum" data-aos="fade-down">
+                <h4>Servicios</h4>
+                <ul>
+                   <li><a href="#">Bordado</a></li>
+                   <li><a href="#">Sublimacion</a></li>   
+                   <li><a href="#">Bisuteria</a></li>
+                </ul>
+            </div>
+            <div class="footer-colum" data-aos="fade-down">
+                <h4>Siguenos</h4>
+                <div class="redes" data-aos="fade-down">
+                    <a href="https://www.facebook.com/comavdel/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/com_avdel/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://api.whatsapp.com/send?phone=50581545114"><i class="fab fa-whatsapp"></i></a>
+                    <a href="mailto:gestioncomavdel@hotmail.com"><i class="fas fa-envelope"></i></a>
+              </div>
+          </div>
+      </div>
+  </div>
+</footer>
+<script>
+$(document).ready(function(){
+  $('[data-toggle="popover"]').popover();
+});
+</script>
+</body>
+</html>
