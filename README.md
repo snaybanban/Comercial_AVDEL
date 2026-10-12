@@ -1,2 +1,2 @@
 # Comercial_AVDEL
-pagina de sublimacion
+pagina de sublimacion, bordados, serigrafia
